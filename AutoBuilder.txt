@@ -1,0 +1,143 @@
+-- UI Script
+
+-- Create a new UI screen
+local screen = Instance.new("ScreenGui")
+screen.Parent = game.Players.LocalPlayer.PlayerGui
+
+-- Create a frame for the UI
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 200)
+frame.Position = UDim2.new(0, 10, 0, 10)
+frame.BackgroundColor3 = Color3.new(1, 1, 1)
+frame.Parent = screen
+
+-- Create a label for the UI
+local label = Instance.new("TextLabel")
+label.Text = "Auto Build Settings"
+label.Font = Enum.Font.SourceSans
+label.FontSize = Enum.FontSize.Size24
+label.Parent = frame
+
+-- Create a dropdown menu for selecting the boat to build
+local boatDropdown = Instance.new("Dropdown")
+boatDropdown.Size = UDim2.new(0, 150, 0, 30)
+boatDropdown.Position = UDim2.new(0, 10, 0, 40)
+boatDropdown.Parent = frame
+
+-- Create a list of available boats
+local boats = {"Boat1", "Boat2", "Boat3"} -- Add more boats to this list as needed
+for i, boat in pairs(boats) do
+    local option = Instance.new("DropdownOption")
+    option.Text = boat
+    option.Parent = boatDropdown
+end
+
+-- Create a text box for the delay between builds
+local delayTextBox = Instance.new("TextBox")
+delayTextBox.PlaceholderText = "Delay between builds (seconds)"
+delayTextBox.Size = UDim2.new(0, 150, 0, 30)
+delayTextBox.Position = UDim2.new(0, 10, 0, 80)
+delayTextBox.Parent = frame
+
+-- Create a button to start the auto build process
+local startButton = Instance.new("TextButton")
+startButton.Text = "Start Auto Build"
+startButton.Font = Enum.Font.SourceSans
+startButton.FontSize = Enum.FontSize.Size24
+startButton.Size = UDim2.new(0, 100, 0, 30)
+startButton.Position = UDim2.new(0, 10, 0, 120)
+startButton.Parent = frame
+
+-- Create a variable to store the delay between builds
+local delay = 10
+
+-- Function to start the auto build process
+local function startAutoBuild()
+    -- Get the delay value from the text box
+    delay = tonumber(delayTextBox.Text)
+    if delay == nil then
+        delay = 10
+    end
+    
+    -- Get the selected boat from the dropdown menu
+    local selectedBoat = boatDropdown.SelectedItem.Text
+    
+    -- Start the building script
+    local buildingScript = Instance.new("LocalScript")
+    buildingScript.Parent = screen
+    buildingScript.Source = "buildingScript.lua"
+end
+
+-- Add an event listener to the start button
+startButton.MouseButton1Click:Connect(startAutoBuild)
+
+-- Building Script
+
+-- Wait for the delay between builds
+wait(delay)
+
+-- Function to build a boat
+local function buildBoat(boatName)
+    -- Get the player's character
+    local character = game.Players.LocalPlayer.Character
+    
+    -- Get the boat template
+    local boatTemplate = game.ServerStorage[boatName]
+    
+    -- Clone the boat template
+    local boat = boatTemplate:Clone()
+    boat.Parent = character
+    
+    -- Set the boat's position and rotation
+    boat:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
+    
+    -- Wait for the boat to be built
+    wait(5)
+    
+    -- Create a folder in the workspace for the built boats
+    local buildsFolder = Instance.new("Folder")
+    buildsFolder.Name = "builds"
+    buildsFolder.Parent = workspace
+    
+    -- Create a folder for the specific boat
+    local boatFolder = Instance.new("Folder")
+    boatFolder.Name = boatName
+    boatFolder.Parent = buildsFolder
+    
+    -- Move the built boat to the folder
+    boat.Parent = boatFolder
+    
+    -- Create a button to view the built boat
+    local viewButton = Instance.new("TextButton")
+    viewButton.Text = "View"
+    viewButton.Font = Enum.Font.SourceSans
+    viewButton.FontSize = Enum.FontSize.Size24
+    viewButton.Size = UDim2.new(0, 50, 0, 30)
+    viewButton.Position = UDim2.new(0, 10, 0, 10)
+    viewButton.Parent = boatFolder
+    
+    -- Create a button to auto build the boat
+    local autoBuildButton = Instance.new("TextButton")
+    autoBuildButton.Text = "Auto Build"
+    autoBuildButton.Font = Enum.Font.SourceSans
+    autoBuildButton.FontSize = Enum.FontSize.Size24
+    autoBuildButton.Size = UDim2.new(0, 50, 0, 30)
+    autoBuildButton.Position = UDim2.new(0, 70, 0, 10)
+    autoBuildButton.Parent = boatFolder
+    
+    -- Check the player's flag color
+    local flagColor = game.Players.LocalPlayer.Character.Flag.Color
+    if flagColor == BrickColor.new("Red") then
+        -- Red flag
+        print("Red flag detected!")
+    elseif flagColor == BrickColor.new("Blue") then
+        -- Blue flag
+        print("Blue flag detected!")
+    end
+    
+    -- Repeat the building process
+    buildBoat(boatName)
+end
+
+-- Start the building process
+buildBoat(boatDropdown.SelectedItem.Text)
