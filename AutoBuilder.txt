@@ -6,7 +6,7 @@ screen.Parent = game.Players.LocalPlayer.PlayerGui
 
 -- Create a frame for the UI
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 200)
+frame.Size = UDim2.new(0, 300, 0, 300)
 frame.Position = UDim2.new(0, 10, 0, 10)
 frame.BackgroundColor3 = Color3.new(1, 1, 1)
 frame.Parent = screen
@@ -48,6 +48,13 @@ startButton.Size = UDim2.new(0, 100, 0, 30)
 startButton.Position = UDim2.new(0, 10, 0, 120)
 startButton.Parent = frame
 
+-- Create a label to display the player's flag color
+local flagColorLabel = Instance.new("TextLabel")
+flagColorLabel.Text = "Flag Color: "
+flagColorLabel.Font = Enum.Font.SourceSans
+flagColorLabel.FontSize = Enum.FontSize.Size24
+flagColorLabel.Parent = frame
+
 -- Create a variable to store the delay between builds
 local delay = 10
 
@@ -71,6 +78,22 @@ end
 -- Add an event listener to the start button
 startButton.MouseButton1Click:Connect(startAutoBuild)
 
+-- Function to update the flag color label
+local function updateFlagColor()
+    -- Get the player's flag color
+    local flagColor = game.Players.LocalPlayer.Character.Flag.Color
+    if flagColor == BrickColor.new("Red") then
+        flagColorLabel.Text = "Flag Color: Red"
+    elseif flagColor == BrickColor.new("Blue") then
+        flagColorLabel.Text = "Flag Color: Blue"
+    end
+end
+
+-- Update the flag color label every second
+while true do
+    updateFlagColor()
+    wait(1)
+end
 -- Building Script
 
 -- Wait for the delay between builds
@@ -124,16 +147,6 @@ local function buildBoat(boatName)
     autoBuildButton.Size = UDim2.new(0, 50, 0, 30)
     autoBuildButton.Position = UDim2.new(0, 70, 0, 10)
     autoBuildButton.Parent = boatFolder
-    
-    -- Check the player's flag color
-    local flagColor = game.Players.LocalPlayer.Character.Flag.Color
-    if flagColor == BrickColor.new("Red") then
-        -- Red flag
-        print("Red flag detected!")
-    elseif flagColor == BrickColor.new("Blue") then
-        -- Blue flag
-        print("Blue flag detected!")
-    end
     
     -- Repeat the building process
     buildBoat(boatName)
